@@ -1,4 +1,4 @@
-var sendpulse = require("sendpulse-api");
+import sendpulse from "sendpulse-api";
 import config from "../Config/config.js";
 var TOKEN_STORAGE = "/tmp/";
 export const welcome_email = async (email, name) => {

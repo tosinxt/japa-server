@@ -1,4 +1,4 @@
-var sendpulse = require("sendpulse-api");
+import sendpulse from "sendpulse-api";
 
 import config from "../Config/config.js";
 
