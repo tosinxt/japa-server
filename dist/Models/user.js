@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Applications = exports.Talents = exports.Otp = exports.Users = void 0;
-const mongoose_1 = require("mongoose");
-const user_details_schema = new mongoose_1.Schema({
+import { Schema, Types, model } from "mongoose";
+const user_details_schema = new Schema({
     first_name: { type: String },
     last_name: { type: String },
     pass_word: { type: String },
@@ -39,27 +36,24 @@ const user_details_schema = new mongoose_1.Schema({
         },
     ],
 });
-const otp_schema = new mongoose_1.Schema({
+const otp_schema = new Schema({
     email: { type: String },
     otp: { type: String },
 });
-const talents = new mongoose_1.Schema({
+const talents = new Schema({
     full_name: { type: String },
     current_skills: { type: String },
     course_of_choice: { type: String },
     resume_link: { type: String },
     date: { type: Date },
 });
-const apply_for_jobs = new mongoose_1.Schema({
-    user_id: { type: mongoose_1.Types.ObjectId, ref: "Users" },
-    job_id: [{ type: mongoose_1.Types.ObjectId, ref: "Jobs", required: true }],
+const apply_for_jobs = new Schema({
+    user_id: { type: Types.ObjectId, ref: "Users" },
+    job_id: [{ type: Types.ObjectId, ref: "Jobs", required: true }],
 });
-const Users = (0, mongoose_1.model)("Users", user_details_schema);
-exports.Users = Users;
-const Otp = (0, mongoose_1.model)("Otps", otp_schema);
-exports.Otp = Otp;
-const Talents = (0, mongoose_1.model)("Talents", talents);
-exports.Talents = Talents;
-const Applications = (0, mongoose_1.model)("Applications", apply_for_jobs);
-exports.Applications = Applications;
+const Users = model("Users", user_details_schema);
+const Otp = model("Otps", otp_schema);
+const Talents = model("Talents", talents);
+const Applications = model("Applications", apply_for_jobs);
+export { Users, Otp, Talents, Applications };
 //# sourceMappingURL=user.js.map

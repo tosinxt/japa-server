@@ -1,6 +1,6 @@
 var sendpulse = require("sendpulse-api");
 
-import config from "../Config/config";
+import config from "../Config/config.js";
 
 var TOKEN_STORAGE = "/tmp/";
 

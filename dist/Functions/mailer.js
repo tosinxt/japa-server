@@ -1,15 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.reset_otp = exports.welcome_email = void 0;
 var sendpulse = require("sendpulse-api");
-const config_1 = __importDefault(require("../Config/config"));
+import config from "../Config/config.js";
 var TOKEN_STORAGE = "/tmp/";
-const welcome_email = async (email, name) => {
+export const welcome_email = async (email, name) => {
     try {
-        await sendpulse.init(config_1.default.user_id, config_1.default.api_secret, TOKEN_STORAGE);
+        await sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE);
         // console.log(config.user_id, config.api_secret);
         const mailData = {
             html: `
@@ -100,10 +94,9 @@ const welcome_email = async (email, name) => {
         console.error("Error sending welcome email:", error);
     }
 };
-exports.welcome_email = welcome_email;
-const reset_otp = async (email, code) => {
+export const reset_otp = async (email, code) => {
     try {
-        await sendpulse.init(config_1.default.user_id, config_1.default.api_secret, TOKEN_STORAGE);
+        await sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE);
         const mailData = {
             html: `
    <p>Hi ${name},</p>
@@ -119,7 +112,7 @@ const reset_otp = async (email, code) => {
    </p>
 
 `,
-            // text: `Welcome, ${name}!`,
+            // text: `Welcome, ${name}! okay.....`,
             subject: "Password Reset",
             from: {
                 name: "japa Talent",
@@ -145,5 +138,4 @@ const reset_otp = async (email, code) => {
         console.error("Error sending welcome email:", error);
     }
 };
-exports.reset_otp = reset_otp;
 //# sourceMappingURL=mailer.js.map

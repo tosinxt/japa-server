@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateRandomParagraph = void 0;
-const generateRandomParagraph = () => {
+export const generateRandomParagraph = () => {
     const words = [
         "Lorem",
         "ipsum",
@@ -46,5 +43,4 @@ const generateRandomParagraph = () => {
     }
     return paragraph.trim(); // Remove trailing whitespace
 };
-exports.generateRandomParagraph = generateRandomParagraph;
 //# sourceMappingURL=randomtext.js.map

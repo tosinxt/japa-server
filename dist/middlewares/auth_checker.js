@@ -1,18 +1,12 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.check_reset_auth = exports.user_check = exports.admin_check = exports.check_user_auth = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const config_1 = __importDefault(require("../Config/config"));
-const key = config_1.default.key;
-const check_user_auth = async (req, res, next) => {
+import jwt from "jsonwebtoken";
+import config from "../Config/config.js";
+const key = config.key;
+export const check_user_auth = async (req, res, next) => {
     const auth_user_token = req.header("Authorization");
     try {
         if (auth_user_token) {
             const user_token = auth_user_token.split(" ")[1];
-            const analyse_token = jsonwebtoken_1.default.verify(user_token, key);
+            const analyse_token = jwt.verify(user_token, key);
             const my_id = analyse_token["_id"];
             const exp = analyse_token["exp"];
             if (Date.now() >= exp * 1000) {
@@ -38,13 +32,12 @@ const check_user_auth = async (req, res, next) => {
         });
     }
 };
-exports.check_user_auth = check_user_auth;
-const admin_check = async (req, res, next) => {
+export const admin_check = async (req, res, next) => {
     const auth_admin_token = req.header("Authorization");
     try {
         if (auth_admin_token) {
             const user_token = auth_admin_token.split(" ")[1];
-            const analyse_token = jsonwebtoken_1.default.verify(user_token, key);
+            const analyse_token = jwt.verify(user_token, key);
             const my_id = analyse_token["right"];
             const exp = analyse_token["exp"];
             if (Date.now() >= exp * 1000) {
@@ -71,13 +64,12 @@ const admin_check = async (req, res, next) => {
         });
     }
 };
-exports.admin_check = admin_check;
-const user_check = async (req, res, next) => {
+export const user_check = async (req, res, next) => {
     const auth_admin_token = req.header("Authorization");
     try {
         if (auth_admin_token) {
             const user_token = auth_admin_token.split(" ")[1];
-            const analyse_token = jsonwebtoken_1.default.verify(user_token, key);
+            const analyse_token = jwt.verify(user_token, key);
             const my_id = analyse_token["_id"];
             const exp = analyse_token["exp"];
             if (Date.now() >= exp * 1000) {
@@ -104,13 +96,12 @@ const user_check = async (req, res, next) => {
         });
     }
 };
-exports.user_check = user_check;
-const check_reset_auth = async (req, res, next) => {
+export const check_reset_auth = async (req, res, next) => {
     const auth_user_token = req.header("Authorization");
     try {
         if (auth_user_token) {
             const user_token = auth_user_token.split(" ")[1];
-            const analyse_token = jsonwebtoken_1.default.verify(user_token, key);
+            const analyse_token = jwt.verify(user_token, key);
             const my_id = analyse_token["email"];
             const exp = analyse_token["exp"];
             if (Date.now() >= exp * 1000) {
@@ -136,5 +127,4 @@ const check_reset_auth = async (req, res, next) => {
         });
     }
 };
-exports.check_reset_auth = check_reset_auth;
 //# sourceMappingURL=auth_checker.js.map

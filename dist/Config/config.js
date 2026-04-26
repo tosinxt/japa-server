@@ -1,10 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import dotenv from "dotenv";
+dotenv.config();
 const config = {
     conn: process.env.CONN,
     port: process.env.PORT,
@@ -26,5 +21,5 @@ const config = {
     //   azure_storage_connection_string: "your_azure_storage_connection_string",
     //   container_name: "your_azure_storage_container_name",
 };
-exports.default = config;
+export default config;
 //# sourceMappingURL=config.js.map

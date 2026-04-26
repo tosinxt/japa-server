@@ -1,31 +1,25 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.create_admin = exports.set_new_pass = exports.verify_otp = exports.create_otp_for_password_reset = exports.register_user = void 0;
-const async_runner_1 = require("../middlewares/async_runner");
-const express_validator_1 = require("express-validator");
-const user_1 = require("../Models/user");
-const crypt_1 = require("../Functions/crypt");
-const randomtext_1 = require("../Functions/randomtext");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const config_1 = __importDefault(require("../Config/config"));
-const mailer_1 = require("../Functions/mailer");
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const admin_1 = require("../Models/admin");
-const key = config_1.default.key;
-const delete_existing_otp = async (email) => user_1.Otp.findOneAndDelete({ email });
-exports.register_user = (0, async_runner_1.async_runner)(async (req, res) => {
-    const { first_name, last_name, pass_word, bio, country, email, gender, phone_number, profile_image_url, academic_details, auth_o_id, job_status, additional_certification, } = (0, express_validator_1.matchedData)(req);
-    const existing_user = await user_1.Users.findOne({ email });
+import { async_runner } from "../middlewares/async_runner.js";
+import { matchedData } from "express-validator";
+import { Otp, Users } from "../Models/user.js";
+import { generateDigitOTP, hash_pass } from "../Functions/crypt.js";
+import { generateRandomParagraph } from "../Functions/randomtext.js";
+import jwt from "jsonwebtoken";
+import config from "../Config/config.js";
+import { reset_otp, welcome_email } from "../Functions/mailer.js";
+import bcrypt from "bcrypt";
+import { Admin } from "../Models/admin.js";
+const key = config.key;
+const delete_existing_otp = async (email) => Otp.findOneAndDelete({ email });
+export const register_user = async_runner(async (req, res) => {
+    const { first_name, last_name, pass_word, bio, country, email, gender, phone_number, profile_image_url, academic_details, auth_o_id, job_status, additional_certification, } = matchedData(req);
+    const existing_user = await Users.findOne({ email });
     if (existing_user) {
         return res.json({
             message: "Email already taken",
         });
     }
-    const encrypted = await (0, crypt_1.hash_pass)(pass_word);
-    const new_user = new user_1.Users({
+    const encrypted = await hash_pass(pass_word);
+    const new_user = new Users({
         first_name,
         last_name,
         pass_word: encrypted,
@@ -42,24 +36,24 @@ exports.register_user = (0, async_runner_1.async_runner)(async (req, res) => {
         registration_date: Date.now(),
     });
     const save_details = await new_user.save();
-    await (0, mailer_1.welcome_email)(email, first_name);
+    await welcome_email(email, first_name);
     return res.json({
         message: save_details ? "Account created" : "Please check your network",
     });
 });
-exports.create_otp_for_password_reset = (0, async_runner_1.async_runner)(async (req, res) => {
-    const { email } = (0, express_validator_1.matchedData)(req);
+export const create_otp_for_password_reset = async_runner(async (req, res) => {
+    const { email } = matchedData(req);
     delete_existing_otp(email);
-    const check_account = await user_1.Users.findOne({ email: email });
+    const check_account = await Users.findOne({ email: email });
     if (check_account) {
-        const code = (0, crypt_1.generateDigitOTP)(6);
-        const set_otp = new user_1.Otp({
+        const code = generateDigitOTP(6);
+        const set_otp = new Otp({
             otp: code,
             email: email,
         });
         const save_code = await set_otp.save();
         //Add otp email here...
-        await (0, mailer_1.reset_otp)(email, code);
+        await reset_otp(email, code);
         return res.json({
             message: save_code ? `Please check your mail for OTP` : "please retry",
         });
@@ -68,12 +62,12 @@ exports.create_otp_for_password_reset = (0, async_runner_1.async_runner)(async (
         message: "invalid details",
     });
 });
-exports.verify_otp = (0, async_runner_1.async_runner)(async (req, res) => {
-    const { otp, email } = (0, express_validator_1.matchedData)(req);
-    const confirm_check = await user_1.Otp.findOne({ otp });
+export const verify_otp = async_runner(async (req, res) => {
+    const { otp, email } = matchedData(req);
+    const confirm_check = await Otp.findOne({ otp });
     if (confirm_check && confirm_check.email === email) {
-        const combined = (0, randomtext_1.generateRandomParagraph)();
-        const reset_token = jsonwebtoken_1.default.sign({
+        const combined = generateRandomParagraph();
+        const reset_token = jwt.sign({
             email,
             text: combined,
             otp,
@@ -86,12 +80,12 @@ exports.verify_otp = (0, async_runner_1.async_runner)(async (req, res) => {
         message: "invalid details",
     });
 });
-exports.set_new_pass = (0, async_runner_1.async_runner)(async (req, res) => {
-    const { new_pass } = (0, express_validator_1.matchedData)(req);
+export const set_new_pass = async_runner(async (req, res) => {
+    const { new_pass } = matchedData(req);
     const email = req.params.email;
-    const salt = await bcrypt_1.default.genSalt(10);
-    const hashed = await bcrypt_1.default.hash(new_pass, salt);
-    const update_user_pass = await user_1.Users.updateOne({ email: email }, { $set: { pass_word: hashed } }, { new: true });
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(new_pass, salt);
+    const update_user_pass = await Users.updateOne({ email: email }, { $set: { pass_word: hashed } }, { new: true });
     return res.json({
         message: update_user_pass
             ? "Password updated"
@@ -99,9 +93,9 @@ exports.set_new_pass = (0, async_runner_1.async_runner)(async (req, res) => {
     });
 });
 //Register admin.........
-exports.create_admin = (0, async_runner_1.async_runner)(async (req, res) => {
-    const { first_name, last_name, pass_word, email, gender, phone_number, profile_image_url, rights, } = (0, express_validator_1.matchedData)(req);
-    const existing_user = await admin_1.Admin.findOne({
+export const create_admin = async_runner(async (req, res) => {
+    const { first_name, last_name, pass_word, email, gender, phone_number, profile_image_url, rights, } = matchedData(req);
+    const existing_user = await Admin.findOne({
         $or: [{ email }, { phone_number: phone_number }],
     });
     if (existing_user) {
@@ -109,8 +103,8 @@ exports.create_admin = (0, async_runner_1.async_runner)(async (req, res) => {
             message: "Email and Phone number already taken",
         });
     }
-    const encrypted = await (0, crypt_1.hash_pass)(pass_word);
-    const new_user = new admin_1.Admin({
+    const encrypted = await hash_pass(pass_word);
+    const new_user = new Admin({
         first_name,
         last_name,
         pass_word: encrypted,

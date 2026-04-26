@@ -1,27 +1,25 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const registration_val_1 = require("../middlewares/validation/registration_val");
-const admin_1 = require("../Controllers/admin");
-const auth_checker_1 = require("../middlewares/auth_checker");
-exports.default = (router) => {
-    router.post("/admin/login", registration_val_1.validate_signin, registration_val_1.handle_validation_errors, admin_1.login_admin);
-    router.post("/admin/postjob", auth_checker_1.admin_check, registration_val_1.validate_jobs, registration_val_1.handle_validation_errors, admin_1.post_jobs);
-    router.post("/admin/editjobs", auth_checker_1.admin_check, registration_val_1.validate_jobs_edit, registration_val_1.handle_validation_errors, admin_1.edit_jobs);
-    router.delete("/admin/deletejobs", auth_checker_1.admin_check, admin_1.delete_jobs);
-    router.post("/admin/postjobcategory", auth_checker_1.admin_check, admin_1.post_job_category);
-    router.post("/admin/postjobtype", auth_checker_1.admin_check, admin_1.post_job_type);
-    router.post("/admin/posttechnology", auth_checker_1.admin_check, admin_1.post_technology);
-    router.post("/admin/postyoe", auth_checker_1.admin_check, admin_1.post_years_of_experience);
-    router.post("/admin/postcourse", auth_checker_1.admin_check, registration_val_1.validate_courses, admin_1.post_courses);
-    router.put("/admin/editcourse", auth_checker_1.admin_check, registration_val_1.validate_courses_edit, admin_1.post_courses);
-    router.post("/admin/deletecourse", auth_checker_1.admin_check, admin_1.delete_course);
+import { validate_signin, handle_validation_errors, validate_jobs, validate_courses, validate_user_search, validate_course_search, validate_search, validate_courses_edit, validate_jobs_edit, } from "../middlewares/validation/registration_val.js";
+import { login_admin, post_job_category, post_job_type, post_jobs, post_courses, stats, user_list, course_list, delete_course, jobs_list, edit_jobs, talent_list, delete_jobs, list_job_type, list_job_cats, post_technology, post_years_of_experience, } from "../Controllers/admin.js";
+import { admin_check } from "../middlewares/auth_checker.js";
+export default (router) => {
+    router.post("/admin/login", validate_signin, handle_validation_errors, login_admin);
+    router.post("/admin/postjob", admin_check, validate_jobs, handle_validation_errors, post_jobs);
+    router.post("/admin/editjobs", admin_check, validate_jobs_edit, handle_validation_errors, edit_jobs);
+    router.delete("/admin/deletejobs", admin_check, delete_jobs);
+    router.post("/admin/postjobcategory", admin_check, post_job_category);
+    router.post("/admin/postjobtype", admin_check, post_job_type);
+    router.post("/admin/posttechnology", admin_check, post_technology);
+    router.post("/admin/postyoe", admin_check, post_years_of_experience);
+    router.post("/admin/postcourse", admin_check, validate_courses, post_courses);
+    router.put("/admin/editcourse", admin_check, validate_courses_edit, post_courses);
+    router.post("/admin/deletecourse", admin_check, delete_course);
     // add admin verification to both APIS
-    router.get("/admin/stats", admin_1.stats);
-    router.get("/admin/users", registration_val_1.validate_user_search, admin_1.user_list);
-    router.get("/admin/jobs", registration_val_1.validate_search, admin_1.jobs_list);
-    router.get("/admin/courses", registration_val_1.validate_course_search, admin_1.course_list);
-    router.get("/admin/talents", registration_val_1.validate_search, admin_1.talent_list);
-    router.get("/admin/jobcats", auth_checker_1.admin_check, admin_1.list_job_cats);
-    router.get("/admin/jobtype", auth_checker_1.admin_check, admin_1.list_job_type);
+    router.get("/admin/stats", stats);
+    router.get("/admin/users", validate_user_search, user_list);
+    router.get("/admin/jobs", validate_search, jobs_list);
+    router.get("/admin/courses", validate_course_search, course_list);
+    router.get("/admin/talents", validate_search, talent_list);
+    router.get("/admin/jobcats", admin_check, list_job_cats);
+    router.get("/admin/jobtype", admin_check, list_job_type);
 };
 //# sourceMappingURL=admin.js.map
