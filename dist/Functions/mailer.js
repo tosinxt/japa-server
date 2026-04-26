@@ -3,7 +3,7 @@ import config from "../Config/config.js";
 var TOKEN_STORAGE = "/tmp/";
 export const welcome_email = async (email, name) => {
     try {
-        await sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE);
+        sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE, (token) => { });
         // console.log(config.user_id, config.api_secret);
         const mailData = {
             html: `
@@ -96,7 +96,7 @@ export const welcome_email = async (email, name) => {
 };
 export const reset_otp = async (email, code) => {
     try {
-        await sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE);
+        sendpulse.init(config.user_id, config.api_secret, TOKEN_STORAGE, (token) => { });
         const mailData = {
             html: `
    <p>Hi ${name},</p>
